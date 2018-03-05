@@ -104,7 +104,8 @@ hammertime.on('swipeup', function(ev) {
 
 $("form[name='message']").submit(function(){
     if($('#m').val() != '') {
-      msg = {user: player_name, text: $('#m').val()};
+      // msg = {user: player_name, text: $('#m').val()};
+      msg = "mensaje de chat";
       socket.emit('chat message', msg);
         $('#m').val('');
     };
