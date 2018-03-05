@@ -8,7 +8,8 @@ app.set('address', process.env.IP || '127.0.0.1');
 app.use(express.static('app'));
 
 app.get('/', function(req, res) {
-  res.sendFile('index.html');
+  console.log('heeeey');
+  res.render('index.html');
 });
 
 http.listen(app.get('port'), app.get('address'), function(){
