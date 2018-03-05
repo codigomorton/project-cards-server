@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 
 express()
   .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('index.html'))
+  .get('/', (req, res) => res.render('public/index.html'))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 io.on('connection', function(socket) {
