@@ -1,0 +1,115 @@
+<!doctype html>
+<html style='width:100%;height:100%;'>
+<meta name='viewport' content='user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1'>
+  <head>
+    <title>Player</title>
+    <link rel='stylesheet' href='//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css'>
+    <link rel='stylesheet' href='player.css' type='text/css'>
+  </head>
+  <body>
+  <div id='player' style='overflow:hidden;'>
+  <div id='player_name_text'>Current player: <span>...</span></div>
+  <br>
+  <div id='card'><img id='current_card' src='card1.jpg'><span></span></div>  
+  <form name='message' action=''>
+      <input id='m' autocomplete='off' /><button>Send to chat</button>
+    </form>
+  </div>
+      <script src='https://cdn.socket.io/socket.io-1.3.7.js'>
+      </script>
+  <script src='//code.jquery.com/jquery-1.10.2.min.js'>
+  </script>
+  <script src='//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js'>
+  </script>
+  <script src='//hammerjs.github.io/dist/hammer.min.js'>
+  </script>
+
+<script>
+
+var socket = io();
+
+player_name = localStorage.getItem('name'); 
+
+$('#player_name_text span').text(player_name);
+
+function shuffle(array) {
+var currentIndex = array.length, temporaryValue, randomIndex;
+
+// While there remain elements to shuffle...
+while (0 !== currentIndex) {
+
+  // Pick a remaining element...
+  randomIndex = Math.floor(Math.random() * currentIndex);
+  currentIndex -= 1;
+
+  // And swap it with the current element.
+  temporaryValue = array[currentIndex];
+  array[currentIndex] = array[randomIndex];
+  array[randomIndex] = temporaryValue;
+}
+
+return array;
+}
+
+var full_deck = [
+'Chuck',
+'Morris',
+'Parseker',
+'Mortoidon',
+'Fort',
+'Nye',
+'Shazam'
+];
+
+player_hand = shuffle(full_deck).slice(0,7);
+
+var current_card = 0;
+
+$('#current_card').attr('src', player_hand[current_card] + '.jpg');
+
+var card_display = document.getElementById('card');
+var hammertime = new Hammer(card_display);
+hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+hammertime.on('swipeleft', function(ev) {
+    if (current_card <= 0) {
+      current_card = player_hand.length - 1;
+    } else {
+      current_card = current_card - 1;
+    }
+    $('#current_card').attr('src', player_hand[current_card] + '.jpg');
+});
+hammertime.on('swiperight', function(ev) {
+    if (current_card >= player_hand.length - 1) {
+      current_card = 0;
+    } else {
+      current_card = current_card + 1;
+    } 
+    $('#current_card').attr('src', player_hand[current_card] + '.jpg');
+});
+hammertime.on('swipeup', function(ev) {
+    console.log(ev);
+    if (player_hand.length > 0) {
+      play = {user: player_name, card: player_hand[current_card]};
+      socket.emit('card played', play);
+      player_hand.splice(current_card,1);
+      if (player_hand.length <= 0) {
+        $('#current_card').hide();
+        $('#card span').text('Your hand is empty.');
+      } else {
+        $('#current_card').attr('src', player_hand[0] + '.jpg');
+      };
+    };
+    return false;
+});
+
+$("form[name='message']").submit(function(){
+    if($('#m').val() != '') {
+      msg = {user: player_name, text: $('#m').val()};
+      socket.emit('chat message', msg);
+        $('#m').val('');
+    };
+    return false;
+});
+</script>
+  </body>
+</html>
