@@ -64,10 +64,14 @@ function cards_size() {
   };
 };
 
-socket.on('chat message', function(msg){
+socket.on('login message', function(msg){
   $('#messages').append($('<li>').text(msg));
+  console.log('imprimiendo login');
+});   
+
+socket.on('chat message', function(msg){
+  $('#messages').append($('<li>').text(msg.user + ' says: ' + msg.text));
   console.log('imprimiendo chat');
-  // $('#messages').append($('<li>').text(msg.user + ' says: ' + msg.text));
 });   
   
 socket.on('card played', function(play){

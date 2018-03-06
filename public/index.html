@@ -38,7 +38,7 @@
 
     $("form[name='name_form']").submit(function(){
             player_name = $('#submit_name').val();
-            socket.emit('chat message', player_name + ' is connected.');
+            socket.emit('login message', player_name + ' is connected.');
             if(typeof(Storage) !== 'undefined') {
             localStorage.setItem('name', player_name);
             }
